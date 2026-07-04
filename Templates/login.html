@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BevERP - Login</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f0f4f8;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.card{background:#fff;border-radius:16px;padding:40px 36px;width:400px;box-shadow:0 4px 24px rgba(0,0,0,0.09)}
+.logo{text-align:center;margin-bottom:28px}
+.logo-icon{font-size:36px;margin-bottom:8px}
+.logo-title{font-size:22px;font-weight:600;color:#1a1a2e}
+.logo-sub{font-size:13px;color:#888;margin-top:2px}
+label{display:block;font-size:13px;font-weight:500;color:#444;margin-bottom:6px;margin-top:16px}
+input[type=text],input[type=password]{width:100%;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:inherit;outline:none;transition:border .2s}
+input:focus{border-color:#185FA5}
+.btn{width:100%;padding:12px;background:#185FA5;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;margin-top:24px;font-family:inherit;transition:background .2s}
+.btn:hover{background:#0c447c}
+.btn-secondary{width:100%;padding:10px;background:#EEF5FF;color:#185FA5;border:1px solid #D7E7FA;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;margin-top:14px;font-family:inherit}
+.error{background:#FCEBEB;color:#A32D2D;font-size:13px;padding:10px 14px;border-radius:8px;margin-top:16px;border-left:3px solid #E24B4A}
+.message{background:#EAF3DE;color:#3B6D11;font-size:13px;padding:10px 14px;border-radius:8px;margin-top:16px;border-left:3px solid #639922}
+.forgot{border-top:1px solid #e8ecf0;margin-top:22px;padding-top:18px}
+.forgot-title{font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:2px}
+.forgot-sub{font-size:12px;color:#888;line-height:1.4}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">BE</div>
+    <div class="logo-title">BevERP System</div>
+    <div class="logo-sub">Beverage Manufacturing ERP</div>
+  </div>
+
+  {% if reset_token %}
+  <form method="POST" action="/reset-password/{{ reset_token }}">
+    <label>New Password</label>
+    <input type="password" name="password" value="{{ default_password }}" required autofocus>
+    {% if message %}<div class="message">{{ message }}</div>{% endif %}
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <button class="btn" type="submit">Update Password</button>
+  </form>
+  {% else %}
+  <form method="POST" action="/">
+    <label>Username</label>
+    <input type="text" name="username" placeholder="Enter username" required autofocus>
+    <label>Password</label>
+    <input type="password" name="password" placeholder="Enter password" required>
+    {% if message %}<div class="message">{{ message }}</div>{% endif %}
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <button class="btn" type="submit">Login to ERP</button>
+  </form>
+
+  <div class="forgot">
+    <div class="forgot-title">Forgot password?</div>
+    <div class="forgot-sub">Enter your username and a reset link will be sent to the admin email.</div>
+    <form method="POST" action="/forgot-password">
+      <label>Username</label>
+      <input type="text" name="username" placeholder="e.g. staff" required>
+      <button class="btn-secondary" type="submit">Send Reset Link</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+</body>
+</html>

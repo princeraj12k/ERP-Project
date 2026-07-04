@@ -1,0 +1,47 @@
+[
+    {
+        "emp_id": "EMP001",
+        "name": "Rajesh Kumar",
+        "department": "Production",
+        "role": "Supervisor",
+        "basic_salary": 45000,
+        "phone": "9876543210",
+        "join_date": "2021-01-10"
+    },
+    {
+        "emp_id": "EMP002",
+        "name": "Priya Mehta",
+        "department": "Sales",
+        "role": "Sales Executive",
+        "basic_salary": 38000,
+        "phone": "9876543211",
+        "join_date": "2022-03-15"
+    },
+    {
+        "emp_id": "EMP003",
+        "name": "Ajay Tiwari",
+        "department": "Production",
+        "role": "Operator",
+        "basic_salary": 28000,
+        "phone": "9876543212",
+        "join_date": "2022-06-01"
+    },
+    {
+        "emp_id": "EMP004",
+        "name": "Sunita Rao",
+        "department": "HR",
+        "role": "HR Manager",
+        "basic_salary": 52000,
+        "phone": "9876543213",
+        "join_date": "2020-09-20"
+    },
+    {
+        "emp_id": "EMP005",
+        "name": "Manoj Singh",
+        "department": "Warehouse",
+        "role": "Store Keeper",
+        "basic_salary": 25000,
+        "phone": "9876543214",
+        "join_date": "2023-02-05"
+    }
+]

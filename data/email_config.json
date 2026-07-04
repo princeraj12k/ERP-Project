@@ -1,0 +1,7 @@
+{
+    "smtp_host": "smtp.gmail.com",
+    "smtp_port": 587,
+    "smtp_user": "princeraj12k@gmail.com",
+    "smtp_from": "princeraj12k@gmail.com",
+    "smtp_password": "prince9693"
+}

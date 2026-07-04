@@ -1,0 +1,57 @@
+[
+    {
+        "order_id": "SO0089",
+        "customer": "Metro Retail",
+        "product": "Mango Juice 1L",
+        "quantity": 200,
+        "price_per_unit": 122.5,
+        "total_amount": 24500,
+        "delivery_date": "2024-07-20",
+        "status": "Pending",
+        "order_date": "2026-04-17"
+    },
+    {
+        "order_id": "SO0088",
+        "customer": "FreshMart",
+        "product": "Cola 500ml",
+        "quantity": 500,
+        "price_per_unit": 36,
+        "total_amount": 18000,
+        "delivery_date": "2024-07-18",
+        "status": "Dispatched",
+        "order_date": "2026-04-17"
+    },
+    {
+        "order_id": "SO0087",
+        "customer": "QuickStore",
+        "product": "Water 1L",
+        "quantity": 1000,
+        "price_per_unit": 12,
+        "total_amount": 12000,
+        "delivery_date": "2024-07-16",
+        "status": "Delivered",
+        "order_date": "2026-04-17"
+    },
+    {
+        "order_id": "SO0086",
+        "customer": "StarMart",
+        "product": "Energy Drink",
+        "quantity": 150,
+        "price_per_unit": 150,
+        "total_amount": 22500,
+        "delivery_date": "2024-07-14",
+        "status": "Delivered",
+        "order_date": "2026-04-17"
+    },
+    {
+        "order_id": "SO0085",
+        "customer": "BigBazaar",
+        "product": "Mango Juice 1L",
+        "quantity": 300,
+        "price_per_unit": 120,
+        "total_amount": 36000,
+        "delivery_date": "2024-07-12",
+        "status": "Cancelled",
+        "order_date": "2026-04-17"
+    }
+]

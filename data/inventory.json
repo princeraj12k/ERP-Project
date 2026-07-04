@@ -1,0 +1,74 @@
+[
+    {
+        "item_id": "RM001",
+        "name": "Mango Pulp",
+        "quantity": 12,
+        "unit": "kg",
+        "min_stock": 50,
+        "supplier": "FreshFarm Co.",
+        "last_updated": "2026-04-17"
+    },
+    {
+        "item_id": "RM002",
+        "name": "Sugar",
+        "quantity": 240,
+        "unit": "kg",
+        "min_stock": 100,
+        "supplier": "SweetSupply",
+        "last_updated": "2026-04-17"
+    },
+    {
+        "item_id": "RM003",
+        "name": "Water",
+        "quantity": 1800,
+        "unit": "litre",
+        "min_stock": 500,
+        "supplier": "AquaSource",
+        "last_updated": "2026-04-17"
+    },
+    {
+        "item_id": "RM004",
+        "name": "Glass Bottles",
+        "quantity": 0,
+        "unit": "pcs",
+        "min_stock": 200,
+        "supplier": "PackPro",
+        "last_updated": "2026-04-17"
+    },
+    {
+        "item_id": "RM005",
+        "name": "Citric Acid",
+        "quantity": 65,
+        "unit": "kg",
+        "min_stock": 30,
+        "supplier": "ChemBase",
+        "last_updated": "2026-04-17"
+    },
+    {
+        "item_id": "RM006",
+        "name": "Bottle Caps",
+        "quantity": 420,
+        "unit": "pcs",
+        "min_stock": 300,
+        "supplier": "PackPro",
+        "last_updated": "2026-04-17"
+    },
+    {
+        "item_id": "RM007",
+        "name": "Mango pulp",
+        "quantity": 200.0,
+        "unit": "kg",
+        "min_stock": 50.0,
+        "supplier": "abc supplier",
+        "last_updated": "2026-04-17"
+    },
+    {
+        "item_id": "RM007",
+        "name": "Mango pulp",
+        "quantity": 200.0,
+        "unit": "kg",
+        "min_stock": 100.0,
+        "supplier": "FreshFarm co. ",
+        "last_updated": "2026-05-25"
+    }
+]

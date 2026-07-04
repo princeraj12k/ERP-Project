@@ -1,0 +1,38 @@
+[
+    {
+        "user_id": "USR001",
+        "username": "admin",
+        "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+        "full_name": "System Administrator",
+        "role": "Admin",
+        "is_active": true,
+        "can_update_sales": true
+    },
+    {
+        "user_id": "USR002",
+        "username": "manager",
+        "password": "866485796cfa8d7c0cf7111640205b83076433547577511d81f8030ae99ecea5",
+        "full_name": "Production Manager",
+        "role": "Manager",
+        "is_active": true,
+        "can_update_sales": true
+    },
+    {
+        "user_id": "USR003",
+        "username": "staff",
+        "password": "10176e7b7b24d317acfcf8d2064cfd2f24e154f7b5a96603077d5ef813d6a6b6",
+        "full_name": "Floor Staff",
+        "role": "Staff",
+        "is_active": true,
+        "can_update_sales": false
+    },
+    {
+        "user_id": "USR004",
+        "username": "princeraj",
+        "password": "536f7251cde4b41685f9a74ca621f57b3cbb47872087c4dacb43e627b41bf765",
+        "full_name": "prince raj",
+        "role": "Staff",
+        "is_active": true,
+        "can_update_sales": true
+    }
+]

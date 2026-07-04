@@ -1,0 +1,52 @@
+[
+    {
+        "stock_id": "WH001",
+        "item_name": "Mango Juice 1L",
+        "category": "Finished Goods",
+        "quantity": 320,
+        "unit": "cases",
+        "location": "Aisle A1",
+        "reorder_level": 120,
+        "last_updated": "2026-05-01"
+    },
+    {
+        "stock_id": "WH002",
+        "item_name": "Cola 500ml",
+        "category": "Finished Goods",
+        "quantity": 540,
+        "unit": "cases",
+        "location": "Aisle A2",
+        "reorder_level": 180,
+        "last_updated": "2026-05-01"
+    },
+    {
+        "stock_id": "WH003",
+        "item_name": "Glass Bottles",
+        "category": "Packaging",
+        "quantity": 900,
+        "unit": "pcs",
+        "location": "Rack P1",
+        "reorder_level": 500,
+        "last_updated": "2026-05-01"
+    },
+    {
+        "stock_id": "WH004",
+        "item_name": "Bottle Caps",
+        "category": "Packaging",
+        "quantity": 160,
+        "unit": "pcs",
+        "location": "Rack P2",
+        "reorder_level": 300,
+        "last_updated": "2026-05-01"
+    },
+    {
+        "stock_id": "WH005",
+        "item_name": "Sugar",
+        "category": "Raw Material",
+        "quantity": 85,
+        "unit": "kg",
+        "location": "Cold Store C1",
+        "reorder_level": 100,
+        "last_updated": "2026-05-01"
+    }
+]

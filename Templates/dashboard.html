@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BevERP — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;
+  --surface:#fff;
+  --surface-2:#fafbfc;
+  --text:#1a1a2e;
+  --muted:#999;
+  --soft:#666;
+  --border:#e8ecf0;
+  --row-border:#f5f5f5;
+  --primary:#185FA5;
+  --primary-soft:#EEF5FF;
+  --input-border:#e0e0e0;
+  --shadow:none;
+}
+body[data-theme="dark"]{
+  --bg:#0f1723;
+  --surface:#172131;
+  --surface-2:#1f2c3d;
+  --text:#edf4ff;
+  --muted:#9ba9ba;
+  --soft:#c1cad6;
+  --border:#2c3a4d;
+  --row-border:#263345;
+  --primary:#69aef7;
+  --primary-soft:#19314d;
+  --input-border:#35465d;
+  --shadow:0 14px 30px rgba(0,0,0,.22);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);display:flex;min-height:100vh;color:var(--text);transition:background .2s,color .2s}
+
+/* ── SIDEBAR ── */
+.sidebar{width:220px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100}
+.sidebar-logo{padding:20px 18px;border-bottom:1px solid var(--border)}
+.sidebar-logo .name{font-size:17px;font-weight:600;color:var(--text)}
+.sidebar-logo .sub{font-size:11px;color:var(--muted);margin-top:2px}
+.sidebar-user{padding:12px 18px;border-bottom:1px solid var(--border);font-size:12px}
+.sidebar-user .uname{font-weight:500;color:var(--primary)}
+.sidebar-user .urole{color:var(--muted);font-size:11px}
+nav{padding:10px 0;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;font-weight:500;color:var(--soft);cursor:pointer;border-left:3px solid transparent;transition:all .15s;text-decoration:none}
+.nav-item:hover{background:var(--surface-2);color:var(--primary)}
+.nav-item.active{background:var(--primary-soft);color:var(--primary);border-left:3px solid var(--primary)}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.logout-btn{padding:16px 18px;border-top:1px solid var(--border)}
+.logout-btn a{display:flex;align-items:center;gap:8px;font-size:13px;color:#E24B4A;text-decoration:none;font-weight:500}
+
+/* ── MAIN CONTENT ── */
+.main{margin-left:220px;flex:1;padding:24px;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-size:20px;font-weight:600;color:var(--text)}
+.topbar-date{font-size:13px;color:var(--muted)}
+.theme-toggle{position:fixed;top:18px;right:22px;z-index:110;display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;font-weight:500;cursor:pointer;box-shadow:var(--shadow)}
+.theme-toggle:hover{border-color:var(--primary);color:var(--primary)}
+
+/* ── SECTION PAGES ── */
+.section{display:none}.section.active{display:block}
+
+/* ── STAT CARDS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.stat-card{background:var(--surface);border-radius:12px;padding:16px 18px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.stat-label{font-size:12px;color:var(--muted);margin-bottom:6px}
+.stat-val{font-size:24px;font-weight:600;color:var(--text)}
+.stat-sub{font-size:11px;margin-top:4px}
+.up{color:#0F6E56}.down{color:#A32D2D}
+
+/* ── CHART BOXES ── */
+.row{display:grid;gap:16px;margin-bottom:20px}
+.row-2{grid-template-columns:1fr 1fr}
+.row-3{grid-template-columns:1.6fr 1fr}
+.chart-card{background:var(--surface);border-radius:12px;padding:18px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.chart-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.chart-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+.chart-wrap{position:relative;height:200px}
+.chart-wrap.sm{height:160px}
+
+/* ── TABLES ── */
+.table-card{background:var(--surface);border-radius:12px;padding:18px;border:1px solid var(--border);margin-bottom:20px;overflow-x:auto;box-shadow:var(--shadow)}
+.table-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px}
+td{padding:10px 10px;border-bottom:1px solid var(--row-border);color:var(--soft)}
+tr:last-child td{border:none}
+tr:hover td{background:var(--surface-2)}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.b-green{background:#EAF3DE;color:#3B6D11}
+.b-amber{background:#FAEEDA;color:#854F0B}
+.b-red{background:#FCEBEB;color:#A32D2D}
+.b-blue{background:#E6F1FB;color:#185FA5}
+.b-gray{background:#f0f0f0;color:#555}
+
+/* ── ALERTS ── */
+.alert-list{display:flex;flex-direction:column;gap:10px}
+.alert-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:10px;font-size:13px}
+.alert-item.danger{background:#FCEBEB;color:#A32D2D}
+.alert-item.warn{background:#FAEEDA;color:#854F0B}
+.alert-item.info{background:#E6F1FB;color:#185FA5}
+.alert-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+
+/* ── FORMS ── */
+.form-card{background:var(--surface);border-radius:12px;padding:20px;border:1px solid var(--border);margin-bottom:20px;box-shadow:var(--shadow)}
+.form-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:16px}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:12px;font-weight:500;color:var(--soft)}
+.form-group input,.form-group select{padding:8px 12px;border:1.5px solid var(--input-border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:var(--surface-2);color:var(--text)}
+.form-group input:focus,.form-group select:focus{border-color:var(--primary)}
+.btn-primary{padding:9px 20px;background:#185FA5;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
+.btn-primary:hover{background:#0c447c}
+.btn-danger{padding:5px 12px;background:#FCEBEB;color:#A32D2D;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+
+/* ── ML ── */
+.ml-model-tag{display:inline-block;background:var(--primary-soft);color:var(--primary);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+.legend{display:flex;gap:16px;margin-bottom:8px}
+.leg{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--soft)}
+.leg-dot{width:10px;height:10px;border-radius:2px}
+#anomaly-results{color:var(--soft)!important}
+</style>
+</head>
+<body>
+
+<!-- ─── SIDEBAR ─── -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div>🥤 <span class="name">BevERP</span></div>
+    <div class="sub">Beverage Manufacturing ERP</div>
+  </div>
+  <div class="sidebar-user">
+    <div class="uname">{{ user.full_name }}</div>
+    <div class="urole">{{ user.role }}</div>
+  </div>
+  <nav>
+    <a class="nav-item active" onclick="show('dashboard',this)"><span class="nav-icon">▦</span> Dashboard</a>
+    <a class="nav-item" onclick="show('inventory',this)"><span class="nav-icon">◫</span> Inventory</a>
+    <a class="nav-item" onclick="show('warehouse',this)"><span class="nav-icon">WH</span> Warehouse</a>
+    <a class="nav-item" onclick="show('sales',this)"><span class="nav-icon">⊕</span> Sales & Orders</a>
+    <a class="nav-item" onclick="show('production',this)"><span class="nav-icon">◈</span> Production</a>
+    {% if user.role in ['Admin','Manager'] %}
+    <a class="nav-item" onclick="show('hr',this)"><span class="nav-icon">◉</span> HR & Payroll</a>
+    {% endif %}
+    {% if user.role == 'Admin' %}
+    <a class="nav-item" onclick="show('access',this)"><span class="nav-icon">AD</span> User Access</a>
+    {% endif %}
+    <a class="nav-item" onclick="show('ml',this)"><span class="nav-icon">✦</span> ML Insights</a>
+  </nav>
+  <div class="logout-btn"><a href="/logout">🚪 Logout</a></div>
+</div>
+
+<!-- ─── MAIN ─── -->
+<div class="main">
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme">
+  <span id="themeIcon">Moon</span>
+  <span id="themeLabel">Dark</span>
+</button>
+
+<!-- ═══ 1. DASHBOARD ═══ -->
+<div id="sec-dashboard" class="section active">
+  <div class="topbar">
+    <div class="page-title">Main ERP Dashboard</div>
+    <div class="topbar-date">{{ user.role }} Account</div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-val">₹{{ "{:,.0f}".format(total_revenue) }}</div><div class="stat-sub up">↑ Delivered orders</div></div>
+    <div class="stat-card"><div class="stat-label">Open Orders</div><div class="stat-val">{{ open_orders }}</div><div class="stat-sub up">↑ Pending + Confirmed</div></div>
+    <div class="stat-card"><div class="stat-label">Inventory Items</div><div class="stat-val">{{ inv_value }}</div><div class="stat-sub {% if low_stock %}down{% else %}up{% endif %}">{{ low_stock|length }} low stock alerts</div></div>
+    <div class="stat-card"><div class="stat-label">Production Output</div><div class="stat-val">{{ prod_output }}</div><div class="stat-sub up">↑ Units completed</div></div>
+  </div>
+
+  <div class="row row-3">
+    <div class="chart-card">
+      <div class="chart-title">Revenue vs Expenses</div>
+      <div class="chart-sub">Monthly comparison</div>
+      <div class="legend">
+        <div class="leg"><div class="leg-dot" style="background:#185FA5"></div>Revenue</div>
+        <div class="leg"><div class="leg-dot" style="background:#5DCAA5"></div>Expenses</div>
+      </div>
+      <div class="chart-wrap"><canvas id="cRevExp" role="img" aria-label="Revenue vs Expenses bar chart">Monthly revenue and expenses.</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Sales by Category</div>
+      <div class="chart-sub">Product mix breakdown</div>
+      <div class="chart-wrap"><canvas id="cCat" role="img" aria-label="Sales by category donut chart">Product sales breakdown.</canvas></div>
+    </div>
+  </div>
+
+  {% if low_stock %}
+  <div class="alert-list">
+    {% for item in low_stock %}
+    <div class="alert-item danger"><span class="alert-icon">⚠</span><div><strong>Low Stock:</strong> {{ item.name }} — only {{ item.quantity }} {{ item.unit }} left (min: {{ item.min_stock }}). Supplier: {{ item.supplier }}</div></div>
+    {% endfor %}
+    <div class="alert-item info"><span class="alert-icon">i</span><div><strong>ML Tip:</strong> Based on demand trends, reorder Mango Pulp and Bottle Caps within 3 days.</div></div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- ═══ 2. INVENTORY ═══ -->
+<div id="sec-inventory" class="section">
+  <div class="topbar"><div class="page-title">Inventory Management</div></div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-val">{{ inventory|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">Low Stock</div><div class="stat-val" style="color:#A32D2D">{{ low_stock|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">Out of Stock</div><div class="stat-val" style="color:#A32D2D">{{ inventory|selectattr('quantity','eq',0)|list|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Qty</div><div class="stat-val">{{ inv_value }}</div></div>
+  </div>
+  <div class="form-card">
+    <div class="form-title">➕ Add Raw Material</div>
+    <form method="POST" action="/inventory/add">
+      <div class="form-grid">
+        <div class="form-group"><label>Item ID</label><input name="item_id" placeholder="e.g. RM007" required></div>
+        <div class="form-group"><label>Item Name</label><input name="name" placeholder="e.g. Mango Pulp" required></div>
+        <div class="form-group"><label>Quantity</label><input name="quantity" type="number" step="0.01" required></div>
+        <div class="form-group"><label>Unit</label><select name="unit"><option>kg</option><option>litre</option><option>pcs</option></select></div>
+        <div class="form-group"><label>Min Stock</label><input name="min_stock" type="number" step="0.01" required></div>
+        <div class="form-group"><label>Supplier</label><input name="supplier" required></div>
+      </div>
+      <button class="btn-primary" style="margin-top:14px" type="submit">Add Item</button>
+    </form>
+  </div>
+
+  <div class="table-card">
+    <div class="table-hdr"><span style="font-weight:600;font-size:14px">Raw Materials Stock</span></div>
+    <table>
+      <thead><tr><th>Item ID</th><th>Name</th><th>Qty</th><th>Unit</th><th>Min Stock</th><th>Supplier</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for item in inventory %}
+        <tr>
+          <td>{{ item.item_id }}</td><td>{{ item.name }}</td><td>{{ item.quantity }}</td><td>{{ item.unit }}</td><td>{{ item.min_stock }}</td><td>{{ item.supplier }}</td>
+          <td>
+            {% if item.quantity == 0 %}<span class="badge b-red">Out of Stock</span>
+            {% elif item.quantity <= item.min_stock %}<span class="badge b-amber">Low Stock</span>
+            {% else %}<span class="badge b-green">OK</span>{% endif %}
+          </td>
+          <td><a href="/inventory/delete/{{ item.item_id }}" onclick="return confirm('Delete this item?')"><button class="btn-danger">Delete</button></a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ 3. SALES ═══ -->
+<div id="sec-warehouse" class="section">
+  <div class="topbar"><div class="page-title">Warehouse Stocks</div></div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Stock Lines</div><div class="stat-val">{{ warehouse|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Qty</div><div class="stat-val">{{ warehouse_qty }}</div></div>
+    <div class="stat-card"><div class="stat-label">Low Warehouse Stock</div><div class="stat-val" style="color:#A32D2D">{{ warehouse_low|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">Locations</div><div class="stat-val">{{ warehouse_locations }}</div></div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">Add Warehouse Stock</div>
+    <form method="POST" action="/warehouse/add">
+      <div class="form-grid">
+        <div class="form-group"><label>Item Name</label><input name="item_name" placeholder="e.g. Mango Juice 1L" required></div>
+        <div class="form-group"><label>Category</label><select name="category"><option>Finished Goods</option><option>Raw Material</option><option>Packaging</option><option>Spare Parts</option></select></div>
+        <div class="form-group"><label>Quantity</label><input name="quantity" type="number" step="0.01" required></div>
+        <div class="form-group"><label>Unit</label><select name="unit"><option>cases</option><option>pcs</option><option>kg</option><option>litre</option><option>boxes</option></select></div>
+        <div class="form-group"><label>Location</label><input name="location" placeholder="e.g. Aisle B3" required></div>
+        <div class="form-group"><label>Reorder Level</label><input name="reorder_level" type="number" step="0.01" required></div>
+      </div>
+      <button class="btn-primary" style="margin-top:14px" type="submit">Add Stock</button>
+    </form>
+  </div>
+
+  <div class="table-card">
+    <div class="table-hdr"><span style="font-weight:600;font-size:14px">Warehouse Stock Register</span></div>
+    <table>
+      <thead><tr><th>Stock ID</th><th>Item</th><th>Category</th><th>Qty</th><th>Unit</th><th>Location</th><th>Reorder</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for stock in warehouse %}
+        <tr>
+          <td>{{ stock.stock_id }}</td><td>{{ stock.item_name }}</td><td>{{ stock.category }}</td><td>{{ stock.quantity }}</td><td>{{ stock.unit }}</td><td>{{ stock.location }}</td><td>{{ stock.reorder_level }}</td>
+          <td>
+            {% if stock.quantity == 0 %}<span class="badge b-red">Out of Stock</span>
+            {% elif stock.quantity <= stock.reorder_level %}<span class="badge b-amber">Reorder</span>
+            {% else %}<span class="badge b-green">Available</span>{% endif %}
+          </td>
+          <td><a href="/warehouse/delete/{{ stock.stock_id }}" onclick="return confirm('Delete this warehouse stock?')"><button class="btn-danger">Delete</button></a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="sec-sales" class="section">
+  <div class="topbar"><div class="page-title">Sales & Orders</div></div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Total Orders</div><div class="stat-val">{{ sales|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-val">₹{{ "{:,.0f}".format(sales|sum(attribute='total_amount')) }}</div></div>
+    <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-val" style="color:#854F0B">{{ sales|selectattr('status','eq','Pending')|list|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">Delivered</div><div class="stat-val" style="color:#0F6E56">{{ sales|selectattr('status','eq','Delivered')|list|length }}</div></div>
+  </div>
+
+  <div class="row row-2">
+    <div class="chart-card">
+      <div class="chart-title">Orders by Status</div><div class="chart-sub">Current order distribution</div>
+      <div class="chart-wrap sm"><canvas id="cStatus" role="img" aria-label="Order status donut chart">Orders by status.</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Monthly Revenue Trend</div><div class="chart-sub">₹ over months</div>
+      <div class="chart-wrap sm"><canvas id="cSalesTrend" role="img" aria-label="Monthly sales trend line chart">Monthly revenue trend.</canvas></div>
+    </div>
+  </div>
+
+  {% if can_update_sales %}
+  <div class="form-card">
+    <div class="form-title">➕ New Customer Order</div>
+    <form method="POST" action="/sales/add">
+      <div class="form-grid">
+        <div class="form-group"><label>Customer Name</label><input name="customer" required></div>
+        <div class="form-group"><label>Product</label><input name="product" required></div>
+        <div class="form-group"><label>Quantity (units)</label><input name="quantity" type="number" required></div>
+        <div class="form-group"><label>Price per Unit (₹)</label><input name="price_per_unit" type="number" step="0.01" required></div>
+        <div class="form-group"><label>Delivery Date</label><input name="delivery_date" type="date" required></div>
+      </div>
+      <button class="btn-primary" style="margin-top:14px">Place Order</button>
+    </form>
+  </div>
+  {% else %}
+  <div class="alert-list" style="margin-bottom:20px">
+    <div class="alert-item warn"><span class="alert-icon">i</span><div>Sales & Orders updates are locked. Ask an Admin to grant your user sales update permission.</div></div>
+  </div>
+  {% endif %}
+
+  <div class="table-card">
+    <div class="table-hdr"><span style="font-weight:600;font-size:14px">All Orders</span></div>
+    <table>
+      <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Qty</th><th>Amount</th><th>Delivery</th><th>Status</th>{% if can_update_sales %}<th>Update</th>{% endif %}</tr></thead>
+      <tbody>
+        {% for o in sales %}
+        <tr>
+          <td>{{ o.order_id }}</td><td>{{ o.customer }}</td><td>{{ o.product }}</td><td>{{ o.quantity }}</td><td>₹{{ "{:,.0f}".format(o.total_amount) }}</td><td>{{ o.delivery_date }}</td>
+          <td>
+            {% if o.status == 'Delivered' %}<span class="badge b-green">{{ o.status }}</span>
+            {% elif o.status == 'Pending' %}<span class="badge b-amber">{{ o.status }}</span>
+            {% elif o.status == 'Cancelled' %}<span class="badge b-red">{{ o.status }}</span>
+            {% elif o.status == 'Dispatched' %}<span class="badge b-blue">{{ o.status }}</span>
+            {% else %}<span class="badge b-gray">{{ o.status }}</span>{% endif %}
+          </td>
+          {% if can_update_sales %}
+          <td>
+            <form method="POST" action="/sales/update/{{ o.order_id }}" style="display:flex;gap:8px;align-items:center">
+              <select name="status" style="padding:5px 8px;border:1px solid var(--input-border);border-radius:6px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:12px">
+                {% for status in ['Pending','Confirmed','Dispatched','Delivered','Cancelled'] %}
+                <option {% if o.status == status %}selected{% endif %}>{{ status }}</option>
+                {% endfor %}
+              </select>
+              <button class="btn-primary" style="padding:5px 10px;font-size:12px" type="submit">Save</button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ 4. PRODUCTION ═══ -->
+<div id="sec-production" class="section">
+  <div class="topbar"><div class="page-title">Production Planning</div></div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Total Orders</div><div class="stat-val">{{ production|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">In Progress</div><div class="stat-val" style="color:#185FA5">{{ production|selectattr('status','eq','In Progress')|list|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-val" style="color:#0F6E56">{{ production|selectattr('status','eq','Completed')|list|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">Units Planned</div><div class="stat-val">{{ production|sum(attribute='batch_size') }}</div></div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:20px">
+    <div class="chart-title">Production — Planned vs Actual</div><div class="chart-sub">Monthly batch output</div>
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:#185FA5"></div>Planned</div>
+      <div class="leg"><div class="leg-dot" style="background:#5DCAA5"></div>Actual</div>
+    </div>
+    <div class="chart-wrap"><canvas id="cProd" role="img" aria-label="Production planned vs actual bar chart">Planned vs actual production monthly.</canvas></div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">➕ Create Production Order</div>
+    <form method="POST" action="/production/add">
+      <div class="form-grid">
+        <div class="form-group"><label>Product Name</label><input name="product" placeholder="e.g. Mango Juice 1L" required></div>
+        <div class="form-group"><label>Batch Size (units)</label><input name="batch_size" type="number" required></div>
+        <div class="form-group"><label>Raw Material</label><input name="raw_material" required></div>
+        <div class="form-group"><label>Qty Required</label><input name="qty_required" type="number" step="0.01" required></div>
+        <div class="form-group"><label>Start Date</label><input name="start_date" type="date" required></div>
+        <div class="form-group"><label>End Date</label><input name="end_date" type="date" required></div>
+        <div class="form-group"><label>Supervisor</label><input name="supervisor" required></div>
+      </div>
+      <button class="btn-primary" style="margin-top:14px">Create Order</button>
+    </form>
+  </div>
+
+  <div class="table-card">
+    <div class="table-hdr"><span style="font-weight:600;font-size:14px">Work Orders</span></div>
+    <table>
+      <thead><tr><th>Order ID</th><th>Product</th><th>Batch Size</th><th>Start</th><th>End</th><th>Supervisor</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for p in production %}
+        <tr>
+          <td>{{ p.order_id }}</td><td>{{ p.product }}</td><td>{{ p.batch_size }}</td><td>{{ p.start_date }}</td><td>{{ p.end_date }}</td><td>{{ p.supervisor }}</td>
+          <td>
+            {% if p.status == 'Completed' %}<span class="badge b-green">{{ p.status }}</span>
+            {% elif p.status == 'In Progress' %}<span class="badge b-blue">{{ p.status }}</span>
+            {% elif p.status == 'Delayed' %}<span class="badge b-red">{{ p.status }}</span>
+            {% else %}<span class="badge b-amber">{{ p.status }}</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ 5. HR ═══ -->
+{% if user.role in ['Admin','Manager'] %}
+<div id="sec-hr" class="section">
+  <div class="topbar"><div class="page-title">HR & Payroll</div></div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Total Employees</div><div class="stat-val">{{ employees|length }}</div></div>
+    <div class="stat-card"><div class="stat-label">Monthly Payroll</div><div class="stat-val">₹{{ "{:,.0f}".format(employees|sum(attribute='basic_salary')) }}</div></div>
+    <div class="stat-card"><div class="stat-label">Departments</div><div class="stat-val">4</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Salary</div><div class="stat-val">₹{{ "{:,.0f}".format((employees|sum(attribute='basic_salary')) / (employees|length) if employees else 0) }}</div></div>
+  </div>
+
+  <div class="row row-2">
+    <div class="chart-card">
+      <div class="chart-title">Dept. Headcount</div><div class="chart-sub">Employees per department</div>
+      <div class="chart-wrap sm"><canvas id="cDept" role="img" aria-label="Department headcount bar chart">Employees by department.</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Salary Distribution</div><div class="chart-sub">By department</div>
+      <div class="chart-wrap sm"><canvas id="cSalary" role="img" aria-label="Salary distribution chart">Salary by department.</canvas></div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">➕ Add Employee</div>
+    <form method="POST" action="/hr/add">
+      <div class="form-grid">
+        <div class="form-group"><label>Full Name</label><input name="name" required></div>
+        <div class="form-group"><label>Department</label><select name="department"><option>Production</option><option>Sales</option><option>HR</option><option>Warehouse</option></select></div>
+        <div class="form-group"><label>Job Role</label><input name="role" required></div>
+        <div class="form-group"><label>Basic Salary (₹)</label><input name="basic_salary" type="number" required></div>
+        <div class="form-group"><label>Phone</label><input name="phone" required></div>
+        <div class="form-group"><label>Join Date</label><input name="join_date" type="date" required></div>
+      </div>
+      <button class="btn-primary" style="margin-top:14px">Add Employee</button>
+    </form>
+  </div>
+
+  <div class="table-card">
+    <div class="table-hdr"><span style="font-weight:600;font-size:14px">Employee List</span></div>
+    <table>
+      <thead><tr><th>Emp ID</th><th>Name</th><th>Department</th><th>Role</th><th>Basic Salary</th><th>Phone</th><th>Join Date</th></tr></thead>
+      <tbody>
+        {% for e in employees %}
+        <tr><td>{{ e.emp_id }}</td><td>{{ e.name }}</td><td>{{ e.department }}</td><td>{{ e.role }}</td><td>₹{{ "{:,.0f}".format(e.basic_salary) }}</td><td>{{ e.phone }}</td><td>{{ e.join_date }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- ═══ 6. ML INSIGHTS ═══ -->
+{% if user.role == 'Admin' %}
+<div id="sec-access" class="section">
+  <div class="topbar"><div class="page-title">User Access Control</div><div class="topbar-date">Admin email: {{ admin_email }}</div></div>
+
+  {% if request.args.get('created_user') %}
+  <div class="alert-list" style="margin-bottom:20px">
+    <div class="alert-item info"><span class="alert-icon">i</span><div><strong>New access created:</strong> username <strong>{{ request.args.get('created_user') }}</strong>, password <strong>{{ request.args.get('created_password') }}</strong>.</div></div>
+  </div>
+  {% endif %}
+  {% if request.args.get('email_settings') == 'saved' %}
+  <div class="alert-list" style="margin-bottom:20px">
+    <div class="alert-item info"><span class="alert-icon">i</span><div>Email settings saved. Use Send Test Email to confirm Gmail accepts the app password.</div></div>
+  </div>
+  {% endif %}
+  {% if request.args.get('email_test') %}
+  <div class="alert-list" style="margin-bottom:20px">
+    <div class="alert-item {% if request.args.get('email_test') == 'sent' %}info{% else %}warn{% endif %}"><span class="alert-icon">i</span><div>{% if request.args.get('email_test') == 'sent' %}Test email sent to {{ admin_email }}.{% else %}Test email failed. Check the Gmail App Password and internet connection.{% endif %}</div></div>
+  </div>
+  {% endif %}
+
+  <div class="form-card">
+    <div class="form-title">Admin Email Setup</div>
+    <form method="POST" action="/email-settings/save">
+      <div class="form-grid">
+        <div class="form-group"><label>Gmail Account</label><input name="smtp_user" value="{{ mail_user }}" required></div>
+        <div class="form-group"><label>Gmail App Password</label><input name="smtp_password" type="password" placeholder="{% if mail_configured %}Saved - enter only to replace{% else %}Paste app password{% endif %}"></div>
+        <div class="form-group"><label>Status</label><input value="{% if mail_configured %}Configured{% else %}Not configured{% endif %}" disabled></div>
+      </div>
+      <button class="btn-primary" style="margin-top:14px" type="submit">Save Email Settings</button>
+    </form>
+    <form method="POST" action="/email-settings/test">
+      <button class="btn-primary" style="margin-top:10px;background:#0F6E56" type="submit">Send Test Email</button>
+    </form>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">Create ERP Login</div>
+    <form method="POST" action="/users/add">
+      <div class="form-grid">
+        <div class="form-group"><label>Full Name</label><input name="full_name" placeholder="e.g. Prince Raj" required></div>
+        <div class="form-group"><label>Role</label><select name="role"><option>Staff</option><option>Manager</option><option>Admin</option></select></div>
+        <div class="form-group"><label>Password Pattern</label><input value="username + 123" disabled></div>
+        <div class="form-group"><label>Sales Permission</label><label style="display:flex;align-items:center;gap:8px;margin-top:8px"><input type="checkbox" name="can_update_sales" style="width:auto"> Allow Sales & Orders updates</label></div>
+      </div>
+      <button class="btn-primary" style="margin-top:14px" type="submit">Give Access</button>
+    </form>
+  </div>
+
+  <div class="table-card">
+    <div class="table-hdr"><span style="font-weight:600;font-size:14px">ERP Users</span></div>
+    <table>
+      <thead><tr><th>User ID</th><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Password Pattern</th><th>Sales Updates</th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.user_id }}</td><td>{{ u.full_name }}</td><td>{{ u.username }}</td><td>{{ u.role }}</td>
+          <td>{% if u.is_active %}<span class="badge b-green">Active</span>{% else %}<span class="badge b-gray">Inactive</span>{% endif %}</td>
+          <td>{{ u.username }}123</td>
+          <td>
+            {% if u.role == 'Admin' %}
+            <span class="badge b-blue">Always allowed</span>
+            {% else %}
+            <form method="POST" action="/users/sales-permission" style="display:flex;gap:8px;align-items:center">
+              <input type="hidden" name="username" value="{{ u.username }}">
+              <label style="display:flex;align-items:center;gap:6px;margin:0;font-size:12px;color:var(--soft)"><input type="checkbox" name="can_update_sales" {% if u.can_update_sales %}checked{% endif %} style="width:auto"> Allow</label>
+              <button class="btn-primary" style="padding:5px 10px;font-size:12px" type="submit">Save</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-card">
+    <div class="table-hdr"><span style="font-weight:600;font-size:14px">Password Reset Requests</span></div>
+    <table>
+      <thead><tr><th>Username</th><th>Requested On</th><th>Email</th><th>Reset Link</th></tr></thead>
+      <tbody>
+        {% for req in reset_requests|reverse %}
+        <tr>
+          <td>{{ req.username }}</td>
+          <td>{{ req.requested_on }}</td>
+          <td>{% if req.email_sent %}<span class="badge b-green">Sent</span>{% else %}<span class="badge b-amber">Not configured</span>{% endif %}</td>
+          <td>{% if req.used %}<span class="badge b-gray">Used</span>{% else %}<a href="{{ req.reset_link }}" style="color:var(--primary);font-weight:600">Open Reset Link</a>{% endif %}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4">No reset requests yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<div id="sec-ml" class="section">
+  <div class="topbar"><div class="page-title">ML Insights & Predictions</div></div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Forecast Model</div><div class="stat-val" style="font-size:16px">Linear Reg.</div><div class="stat-sub up">91.4% accuracy</div></div>
+    <div class="stat-card"><div class="stat-label">Next Month Sales</div><div class="stat-val">₹1.38L</div><div class="stat-sub up">↑ ML Predicted</div></div>
+    <div class="stat-card"><div class="stat-label">Demand Clusters</div><div class="stat-val">3</div><div class="stat-sub">K-Means (k=3)</div></div>
+    <div class="stat-card"><div class="stat-label">Anomalies Found</div><div class="stat-val" style="color:#A32D2D" id="anomaly-count">—</div><div class="stat-sub down">Z-Score method</div></div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:20px">
+    <div class="chart-title">Sales Forecast — Actual vs ML Predicted</div>
+    <div class="chart-sub">
+      <span class="ml-model-tag">Linear Regression: y = mx + b</span>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:#185FA5"></div>Actual Sales</div>
+      <div class="leg"><div class="leg-dot" style="background:#E24B4A;border:2px dashed #E24B4A"></div>Predicted (ML)</div>
+    </div>
+    <div class="chart-wrap"><canvas id="cForecast" role="img" aria-label="Sales forecast chart">Actual vs predicted sales.</canvas></div>
+  </div>
+
+  <div class="row row-2">
+    <div class="chart-card">
+      <div class="chart-title">Demand Clustering (K-Means)</div>
+      <div class="chart-sub"><span class="ml-model-tag">K-Means — k=3 clusters</span></div>
+      <div class="chart-wrap"><canvas id="cCluster" role="img" aria-label="Demand clustering scatter chart">Product demand clusters.</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Anomaly Detection Results</div>
+      <div class="chart-sub"><span class="ml-model-tag">Z-Score (Isolation Forest logic)</span></div>
+      <div id="anomaly-results" style="font-size:13px;color:#666;padding-top:10px">Loading ML results...</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<script>
+const THEME_KEY = 'beverp-theme';
+const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+document.body.dataset.theme = savedTheme;
+const erpCharts = [];
+
+function themeColor(name){
+  return getComputedStyle(document.body).getPropertyValue(name).trim();
+}
+
+function applyScaleTheme(scales){
+  Object.values(scales || {}).forEach(scale=>{
+    scale.ticks = {...(scale.ticks || {}), color:themeColor('--muted')};
+    scale.grid = {...(scale.grid || {}), color:themeColor('--border')};
+    if(scale.title){
+      scale.title = {...scale.title, color:themeColor('--soft')};
+    }
+  });
+}
+
+function applyChartTheme(chart){
+  Chart.defaults.color = themeColor('--soft');
+  Chart.defaults.borderColor = themeColor('--border');
+  applyScaleTheme(chart.options.scales);
+  chart.data.datasets.forEach(dataset=>{
+    if(dataset.borderColor === '#fff' || dataset.borderColor === '#172131'){
+      dataset.borderColor = themeColor('--surface');
+    }
+  });
+  chart.update();
+}
+
+function makeChart(id, config){
+  const chart = new Chart(document.getElementById(id).getContext('2d'), config);
+  erpCharts.push(chart);
+  applyChartTheme(chart);
+  return chart;
+}
+
+function setTheme(theme){
+  document.body.dataset.theme = theme;
+  localStorage.setItem(THEME_KEY, theme);
+  const isDark = theme === 'dark';
+  document.getElementById('themeIcon').textContent = isDark ? 'Sun' : 'Moon';
+  document.getElementById('themeLabel').textContent = isDark ? 'Light' : 'Dark';
+  document.getElementById('themeToggle').setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+  erpCharts.forEach(applyChartTheme);
+}
+// ─── NAVIGATION ───
+function show(id, el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  el.classList.add('active');
+  history.replaceState(null, '', '#'+id);
+}
+
+function showFromHash(){
+  const id = window.location.hash.replace('#','') || 'dashboard';
+  const section = document.getElementById('sec-'+id);
+  const nav = document.querySelector(`.nav-item[onclick*="'${id}'"]`);
+  if(section && nav){
+    show(id, nav);
+  }
+}
+
+// ─── CHARTS ───
+window.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('themeToggle').addEventListener('click', ()=>{
+    setTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark');
+  });
+  setTheme(savedTheme);
+  showFromHash();
+
+  const base = {responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}};
+
+  // Revenue vs Expenses
+  makeChart('cRevExp',{type:'bar',data:{
+    labels:['Jun','Jul','Aug','Sep','Oct','Nov'],
+    datasets:[
+      {label:'Revenue',data:[120000,155000,130000,180000,160000,188000],backgroundColor:'#185FA5'},
+      {label:'Expenses',data:[80000,95000,100000,110000,105000,120000],backgroundColor:'#5DCAA5'}
+    ]},options:{...base,scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11},callback:v=>'₹'+(v/1000)+'k'}}}}});
+
+  // Sales by Category
+  makeChart('cCat',{type:'doughnut',data:{
+    labels:['Mango Juice','Cola','Water','Energy Drink'],
+    datasets:[{data:[40,30,20,10],backgroundColor:['#185FA5','#5DCAA5','#EF9F27','#E24B4A'],borderWidth:2,borderColor:'#fff'}]
+  },options:{...base,cutout:'62%'}});
+
+  // Orders Status
+  makeChart('cStatus',{type:'doughnut',data:{
+    labels:['Pending','Dispatched','Delivered','Cancelled'],
+    datasets:[{data:[42,18,121,8],backgroundColor:['#EF9F27','#185FA5','#639922','#E24B4A'],borderWidth:2,borderColor:'#fff'}]
+  },options:{...base,cutout:'58%'}});
+
+  // Sales trend
+  makeChart('cSalesTrend',{type:'line',data:{
+    labels:['Jun','Jul','Aug','Sep','Oct','Nov'],
+    datasets:[{data:[98000,115000,107000,135000,128000,145000],borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.07)',fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#185FA5'}]
+  },options:{...base,scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11},callback:v=>'₹'+(v/1000)+'k'}}}}});
+
+  // Production
+  makeChart('cProd',{type:'bar',data:{
+    labels:['Jun','Jul','Aug','Sep','Oct','Nov'],
+    datasets:[
+      {label:'Planned',data:[600,700,650,800,750,850],backgroundColor:'#185FA5'},
+      {label:'Actual',data:[580,680,610,790,720,830],backgroundColor:'#5DCAA5'}
+    ]},options:{...base,scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11}}}}}});
+
+  // HR dept
+  makeChart('cDept',{type:'bar',data:{
+    labels:['Production','Sales','HR','Warehouse'],
+    datasets:[{data:[20,12,6,10],backgroundColor:['#185FA5','#5DCAA5','#EF9F27','#E24B4A']}]
+  },options:{...base,scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11}}}}}});
+
+  // Salary
+  makeChart('cSalary',{type:'bar',data:{
+    labels:['Production','Sales','HR','Warehouse'],
+    datasets:[{data:[560000,456000,312000,250000],backgroundColor:'#185FA5'}]
+  },options:{...base,scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11},callback:v=>'₹'+(v/1000)+'k'}}}}});
+
+  // ML Forecast
+  makeChart('cForecast',{type:'line',data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'],
+    datasets:[
+      {label:'Actual',data:[95000,102000,110000,118000,105000,125000,130000,null,null,null],borderColor:'#185FA5',tension:.4,pointRadius:4,pointBackgroundColor:'#185FA5'},
+      {label:'Predicted (ML)',data:[null,null,null,null,null,null,130000,138000,145000,152000],borderColor:'#E24B4A',borderDash:[6,4],tension:.4,pointRadius:4,pointBackgroundColor:'#E24B4A'}
+    ]},options:{...base,scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11},callback:v=>'₹'+(v/1000)+'k'}}}}});
+
+  // Clustering
+  makeChart('cCluster',{type:'scatter',data:{datasets:[
+    {label:'Low Demand',data:[{x:10,y:12},{x:15,y:8},{x:12,y:15},{x:8,y:10}],backgroundColor:'#5DCAA5',pointRadius:7},
+    {label:'Medium Demand',data:[{x:35,y:40},{x:42,y:38},{x:38,y:45},{x:45,y:42}],backgroundColor:'#185FA5',pointRadius:7},
+    {label:'High Demand',data:[{x:70,y:75},{x:80,y:72},{x:75,y:80},{x:82,y:78}],backgroundColor:'#E24B4A',pointRadius:7}
+  ]},options:{...base,scales:{x:{title:{display:true,text:'Qty Ordered',font:{size:11}},ticks:{font:{size:10}}},y:{title:{display:true,text:'Revenue (₹k)',font:{size:11}},ticks:{font:{size:10}}}}}});
+
+  // Load anomalies from API
+  fetch('/api/ml/anomalies')
+    .then(r=>r.json())
+    .then(data=>{
+      document.getElementById('anomaly-count').textContent = data.anomaly_count;
+      let html = `<p style="margin-bottom:10px;color:#999;font-size:12px">Mean: ₹${data.mean.toLocaleString()} | Std Dev: ₹${data.std.toLocaleString()} | Threshold: z > 2.0</p>`;
+      if(data.anomaly_count === 0){
+        html += '<div style="color:#3B6D11;background:#EAF3DE;padding:10px 14px;border-radius:8px;font-size:13px">✅ No anomalies detected in current sales data.</div>';
+      } else {
+        data.anomalies.forEach(a=>{
+          html += `<div style="background:#FCEBEB;color:#A32D2D;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:12px">
+            ⚠ <strong>${a.order_id}</strong> — ${a.customer} | ₹${a.amount.toLocaleString()} | Z-score: ${a.z_score}</div>`;
+        });
+      }
+      document.getElementById('anomaly-results').innerHTML = html;
+    });
+});
+</script>
+</body>
+</html>
